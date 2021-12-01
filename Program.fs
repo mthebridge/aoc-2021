@@ -11,8 +11,7 @@
         |> Array.filter is_incr
         |> Array.length
 
-    let incrs =
-        input |> count_incr_steps
+    let incrs = input |> count_incr_steps
 
 
     printfn $"Part 1: {incrs}"
@@ -25,12 +24,9 @@
             if i >= limit then
                 Option.None
             else
-                Option.Some(list[i] + list[i + 1] + list[i + 2]))
+                Option.Some(list.[i] + list.[i + 1] + list.[i + 2]))
         |> Seq.toArray
 
-    let newincrs =
-        input
-        |> threewaysum
-        |> count_incr_steps
+    let newincrs = input |> threewaysum |> count_incr_steps
 
     printfn $"Part 2: {newincrs}"
