@@ -1,6 +1,7 @@
 ﻿module day1 =
     let input =
         System.IO.File.ReadAllLines(@"day1input.txt")
+        |> Array.map int
 
     let is_incr (x, y) = x < y
 
@@ -11,7 +12,7 @@
         |> Array.length
 
     let incrs =
-        input |> Array.map int |> count_incr_steps
+        input |> count_incr_steps
 
 
     printfn $"Part 1: {incrs}"
@@ -29,7 +30,6 @@
 
     let newincrs =
         input
-        |> Array.map int
         |> threewaysum
         |> count_incr_steps
 
