@@ -1,4 +1,6 @@
-﻿module day1 =
+﻿module day1
+
+let runDay =
     let input =
         System.IO.File.ReadAllLines(@"day1input.txt")
         |> Array.map int
