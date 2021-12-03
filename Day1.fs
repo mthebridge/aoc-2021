@@ -22,11 +22,12 @@ let runDay =
         let limit = list.Length - 2
 
         seq { 0 .. list.Length }
-        |> Seq.choose (fun (i) ->
-            if i >= limit then
-                Option.None
-            else
-                Option.Some(list.[i] + list.[i + 1] + list.[i + 2]))
+        |> Seq.choose
+            (fun (i) ->
+                if i >= limit then
+                    Option.None
+                else
+                    Option.Some(list.[i] + list.[i + 1] + list.[i + 2]))
         |> Seq.toArray
 
     let newincrs = input |> threewaysum |> count_incr_steps

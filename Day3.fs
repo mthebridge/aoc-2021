@@ -16,8 +16,10 @@ let runDay =
         let bitCounts = bits |> Array.countBy (fun x -> x = 1)
         // CountBy returns a list of tuples
         let ones =
-            match bitCounts |> Array.tryFind (fun (k, _) -> k = true) with
-            | Some((_, x)) -> x
+            match bitCounts
+                  |> Array.tryFind (fun (k, _) -> k = true)
+                with
+            | Some ((_, x)) -> x
             | None -> 0
 
         let zeros = bits.Length - ones
@@ -48,7 +50,8 @@ let runDay =
             |> Array.transpose
             |> Array.map getMostLeastCommonBit
 
-        let bit = bits.[idx] |> if isHigh then fst else snd
+        let bit =
+            bits.[idx] |> if isHigh then fst else snd
 
         let newList =
             list
