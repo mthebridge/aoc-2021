@@ -9,4 +9,6 @@ let main args =
         | 1  -> day1.runDay; 0
         | 2  -> day2.runDay; 0
         | 3  -> day3.runDay; 0
+        | 4  -> day4.runDay; 0
+        | 5  -> day5.runDay; 0
         |_ -> printfn $"Unimplemented day {day}"; 1
