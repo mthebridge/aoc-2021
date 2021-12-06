@@ -2,7 +2,7 @@ module day3
 
 let runDay =
     let input =
-        System.IO.File.ReadAllLines(@"day3input.txt")
+        System.IO.File.ReadAllLines(@"inputs/day3input.txt")
     // Each line is a binary number, for the first part we might as well keep them as a list
     let parse (line: string) =
         line.ToCharArray()

@@ -2,7 +2,7 @@
 
 let runDay =
     let input =
-        System.IO.File.ReadAllLines(@"day1input.txt")
+        System.IO.File.ReadAllLines(@"inputs/day1input.txt")
         |> Array.map int
 
     let is_incr (x, y) = x < y

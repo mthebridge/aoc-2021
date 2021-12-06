@@ -28,7 +28,7 @@ let getPointsInLine line =
 
 let runDay =
     let input =
-        System.IO.File.ReadAllLines(@"day5input.txt")
+        System.IO.File.ReadAllLines(@"inputs/day5input.txt")
 
     // let input = [|
     //     "0,9 -> 5,9";

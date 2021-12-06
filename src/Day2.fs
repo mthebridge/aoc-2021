@@ -7,7 +7,7 @@ type Instruction =
 
 let runDay =
     let input =
-        System.IO.File.ReadAllLines(@"day2input.txt")
+        System.IO.File.ReadAllLines(@"inputs/day2input.txt")
     let parse (line: string) =
         let parts = line.Split ' '
         let dir = parts[0]
