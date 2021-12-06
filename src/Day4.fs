@@ -12,7 +12,6 @@ let BOARDSIZE = 5
 
 type Board(values: int [] []) =
 
-
     do
         if values.Length <> (BOARDSIZE) then
             invalidArg "" $"Boards must be {BOARDSIZE} by {BOARDSIZE} cells"
@@ -68,31 +67,7 @@ type Board(values: int [] []) =
             row
             |> Array.sumBy (fun c -> if not c.marked then c.value else 0))
 
-
-let runDay =
-    let input =
-        System.IO.File.ReadAllLines(@"inputs/day4input.txt")
-    // let input = [|
-    //     "7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1";
-    //     "";
-    //     "22 13 17 11  0";
-    //      "8  2 23  4 24";
-    //     "21  9 14 16  7";
-    //      "6 10  3 18  5";
-    //      "1 12 20 15 19";
-    //     "";
-    //      "3 15  0  2 22";
-    //      "9 18 13 17  5";
-    //     "19  8  7 25 23";
-    //     "20 11 10 24  4";
-    //     "14 21 16 12  6";
-    //     "";
-    //     "14 21 17 24  4";
-    //     "10 16 15  9 19";
-    //     "18  8 23 26 20";
-    //     "22 11 13  6  5";
-    //     "2  0 12  3  7";
-    // |]
+let runDay (input: string[]) =
 
     // First line is a list of input numbers
     let numbers = input.[0].Split ',' |> Array.map int
@@ -144,12 +119,38 @@ let runDay =
         ((last, None), numbers)
         ||> Array.fold (fun (last_num, last_board) num ->
             // Keep iterating until all boards are won
-            match findNextWinningBoard (boards, num) with
-            | Some (board) ->
-                boardsWon <- (boardsWon + 1)
-                printfn $"{num} has triggered a board win (now {boardsWon})"
-                (num, Some(board))
-            | None -> (last_num, last_board))
+            if boardsWon = boards.Length then
+                (last_num, last_board)
+            else
+                match findNextWinningBoard (boards, num) with
+                | Some (board) ->
+                    boardsWon <- (boardsWon + 1)
+                    // printfn $"{num} has triggered a board win (now {boardsWon})"
+                    (num, Some(board))
+                | None -> (last_num, last_board))
 
     let score = lastWinningBoard.Value.sumUnmarked ()
     printfn $"Part 2: {score * last} = {score} * {last}"
+
+let testDay() =
+    runDay  [|
+         "7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1";
+         "";
+         "22 13 17 11  0";
+          "8  2 23  4 24";
+         "21  9 14 16  7";
+          "6 10  3 18  5";
+          "1 12 20 15 19";
+         "";
+          "3 15  0  2 22";
+          "9 18 13 17  5";
+         "19  8  7 25 23";
+         "20 11 10 24  4";
+         "14 21 16 12  6";
+         "";
+         "14 21 17 24  4";
+         "10 16 15  9 19";
+         "18  8 23 26 20";
+         "22 11 13  6  5";
+         "2  0 12  3  7";
+     |]

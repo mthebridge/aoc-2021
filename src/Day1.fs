@@ -1,10 +1,7 @@
 ﻿module day1
 
-let runDay =
-    let input =
-        System.IO.File.ReadAllLines(@"inputs/day1input.txt")
-        |> Array.map int
-
+let runDay (inputStr: string[]) =
+    let input = inputStr |> Array.map int
     let is_incr (x, y) = x < y
 
     let count_incr_steps list =

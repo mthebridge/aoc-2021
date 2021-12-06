@@ -1,8 +1,6 @@
 module day6
 
-let runDay =
-    let input =
-        System.IO.File.ReadAllLines(@"inputs/day6input.txt")
+let runDay (input: string[]) =
 
     // All that matters is how many fish there are of each value.
     let fish =

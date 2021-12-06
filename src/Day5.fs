@@ -26,22 +26,8 @@ let getPointsInLine line =
         let yincr = if line.start.y > line.finish.y then -1 else 1
         (seq { line.start.x .. xincr .. line.finish.x },seq { line.start.y .. yincr .. line.finish.y }) ||> Seq.zip |> Seq.map (fun (x, y) -> { x = x; y = y} )
 
-let runDay =
-    let input =
-        System.IO.File.ReadAllLines(@"inputs/day5input.txt")
+let runDay input =
 
-    // let input = [|
-    //     "0,9 -> 5,9";
-    //     "8,0 -> 0,8";
-    //     "9,4 -> 3,4";
-    //     "2,2 -> 2,1";
-    //     "7,0 -> 7,4";
-    //     "6,4 -> 2,0";
-    //     "0,9 -> 2,9";
-    //     "3,4 -> 1,4";
-    //     "0,0 -> 8,8";
-    //     "5,5 -> 8,2";
-    // |]
     let allLines = input |> Array.map parseLine
 
     let hvLines = allLines |> Array.filter (fun l -> (l.start.x = l.finish.x) || (l.start.y = l.finish.y))
@@ -61,3 +47,17 @@ let runDay =
 
     let allOverlaps = getOverlapsForLines allLines
     printfn $"Part 2: {allOverlaps} overlapping"
+
+let testDay() =
+    runDay [|
+        "0,9 -> 5,9";
+        "8,0 -> 0,8";
+        "9,4 -> 3,4";
+        "2,2 -> 2,1";
+        "7,0 -> 7,4";
+        "6,4 -> 2,0";
+        "0,9 -> 2,9";
+        "3,4 -> 1,4";
+        "0,0 -> 8,8";
+        "5,5 -> 8,2";
+    |]
