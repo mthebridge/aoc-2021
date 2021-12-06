@@ -5,24 +5,38 @@ let runDay =
         System.IO.File.ReadAllLines(@"day6input.txt")
 
     // All that matters is how many fish there are of each value.
-    let fish = input[0].Split ","  |> Array.map int |> Array.toList
+    let fish =
+        input.[0].Split ","
+        |> Array.map int
+        |> Array.countBy (fun f -> f)
+        |> Array.map (fun (f, count) -> (f, uint64 count))
+        |> Array.toList
 
     let runstep fish =
-        let (newFish, newCount) = (0, fish) ||> List.mapFold (fun newCount f ->
-            if f = 0 then
-                (6, newCount + 1)
-            else
-                (f - 1, newCount)
-        )
-        // do printfn $"{newCount} new fish today"
-        List.append newFish [ for _ in 1 .. newCount -> 8 ]
+        let (newFish, newCount: uint64) =
+            (0UL, fish)
+            ||> List.mapFold (fun newCount (fishVal, count) ->
+                if fishVal = 0 then
+                    ((6, count), newCount + count)
+                else
+                    ((fishVal - 1, count), newCount))
+
+        if newCount > 0UL then
+            (8, newCount) :: newFish
+        else
+            newFish
 
     let rec runSimulation fish steps =
         match steps with
-        |0 -> fish
-        |count -> printfn $"Steps left: {steps}"; runSimulation (runstep fish) (count - 1)
+        | 0 -> fish
+        | count -> runSimulation (runstep fish) (count - 1)
 
-    let part1 = runSimulation fish 80 |> List.length
+    let countFishAfterSteps fish steps =
+        runSimulation fish steps
+        |> List.sumBy (fun (_, count) -> count)
+
+    let part1 = countFishAfterSteps fish 80
     printfn $"part1: {part1}"
-    let part2 = runSimulation fish 256 |> List.length
+
+    let part2 = countFishAfterSteps fish 256
     printfn $"part2: {part2}"
