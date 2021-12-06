@@ -1,6 +1,8 @@
 module day3
 
-let runDay input =
+let expectedTest = (198L, 230L)
+
+let run input =
     // Each line is a binary number, for the first part we might as well keep them as a list
     let parse (line: string) =
         line.ToCharArray()
@@ -38,10 +40,6 @@ let runDay input =
         |> Array.reduce (fun (accGamma, accEpsilon) (nextGamma, nextEpsilon) ->
             (doubleAndShift accGamma nextGamma, doubleAndShift accEpsilon nextEpsilon))
 
-    let ans = gamma * epsilon
-
-    printfn $"Part 1 answer: {ans} = {gamma} * {epsilon}"
-
     let rec filterList list (idx: int) isHigh =
         let bits =
             list
@@ -68,5 +66,4 @@ let runDay input =
         filterList parsed 0 false
         |> Array.reduce doubleAndShift
 
-    let ans = oxygen * co2
-    printfn $"Part 2 answer: {ans} = {oxygen} * {co2}"
+    int64(gamma * epsilon), int64(oxygen * co2)

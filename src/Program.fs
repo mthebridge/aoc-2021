@@ -1,4 +1,3 @@
-
 [<EntryPoint>]
 let main args =
     if args.Length = 0 then
@@ -7,15 +6,25 @@ let main args =
     else
         let day = int args[0]
         let test = if args.Length > 1 then args.[1] = "test" else false
-        let input = System.IO.File.ReadAllLines($@"inputs/day{day}input.txt")
 
-        do match day with
-            | 1  -> day1.runDay input
-            | 2  -> day2.runDay input
-            | 3  -> day3.runDay input
-            | 4  -> if test then day4.testDay() else day4.runDay input
-            | 5  -> if test then day5.testDay() else day5.runDay input
-            | 6  -> day6.runDay input
-            |_ -> invalidArg  $"{day}" "Unimplemented day"
+        let (runfn, (part1exp, part2exp)) =
+            match day with
+            | 1  -> day1.run, day1.expectedTest
+            | 2  -> day2.run, day2.expectedTest
+            | 3  -> day3.run, day3.expectedTest
+            | 4  -> day4.run, day4.expectedTest
+            | 5  -> day5.run, day5.expectedTest
+            | 6  -> day6.run, day6.expectedTest
+            |_ -> invalidArg $"{day}" "Unimplemented day"
 
-        0
+        let input = System.IO.File.ReadAllLines(if test then  $@"inputs/test{day}.txt"  else $@"inputs/day{day}.txt")
+
+        let (part1, part2) = runfn input
+        do printfn $"Part1: {part1}"
+        do printfn $"Part2: {part2}"
+        if test && part1exp <> part1 then
+            printfn $"Part 1 test failed! Expected {part1exp} Got {part1}"; 1
+        elif test && part2exp <> part2 then
+            printfn $"Part 2 test failed! Expected {part2exp} Got {part2}"; 1
+        else
+            printfn "Tests passed!"; 0

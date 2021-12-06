@@ -1,5 +1,7 @@
 module day5
 
+let expectedTest = (5L, 12L)
+
 type Point = { x: int; y: int}
 
 let parsePoint (point: string) =
@@ -26,7 +28,7 @@ let getPointsInLine line =
         let yincr = if line.start.y > line.finish.y then -1 else 1
         (seq { line.start.x .. xincr .. line.finish.x },seq { line.start.y .. yincr .. line.finish.y }) ||> Seq.zip |> Seq.map (fun (x, y) -> { x = x; y = y} )
 
-let runDay input =
+let run input =
 
     let allLines = input |> Array.map parseLine
 
@@ -42,22 +44,7 @@ let runDay input =
         let pointCounts = points |> Array.countBy (fun p -> p)
         do printfn $"Count length: {points.Length}"
         (pointCounts |> Array.filter (fun (_, count) -> count >= 2)).Length
+
     let hvOverlaps = getOverlapsForLines hvLines
-    printfn $"Part 1: {hvOverlaps} overlapping"
-
     let allOverlaps = getOverlapsForLines allLines
-    printfn $"Part 2: {allOverlaps} overlapping"
-
-let testDay() =
-    runDay [|
-        "0,9 -> 5,9";
-        "8,0 -> 0,8";
-        "9,4 -> 3,4";
-        "2,2 -> 2,1";
-        "7,0 -> 7,4";
-        "6,4 -> 2,0";
-        "0,9 -> 2,9";
-        "3,4 -> 1,4";
-        "0,0 -> 8,8";
-        "5,5 -> 8,2";
-    |]
+    int64 hvOverlaps, int64 allOverlaps

@@ -1,5 +1,7 @@
 module day4
 
+let expectedTest = (4512L, 1924L)
+
 type Cell =
     { value: int
       mutable marked: bool }
@@ -61,13 +63,13 @@ type Board(values: int [] []) =
 
 
     // what is the sum of all unmarked
-    member this.sumUnmarked() =
-        cells
+    member this.getScore(last) =
+        last * (cells
         |> Array.sumBy (fun row ->
             row
-            |> Array.sumBy (fun c -> if not c.marked then c.value else 0))
+            |> Array.sumBy (fun c -> if not c.marked then c.value else 0)))
 
-let runDay (input: string[]) =
+let run (input: string[]) =
 
     // First line is a list of input numbers
     let numbers = input.[0].Split ',' |> Array.map int
@@ -108,8 +110,7 @@ let runDay (input: string[]) =
             findNextWinningBoard (boards, num)
             |> Option.map (fun b -> (num, b)))
 
-    let score = firstWinningBoard.sumUnmarked ()
-    printfn $"Part 1: {score * last} = {score} * {last}"
+    let part1 = firstWinningBoard.getScore(last)
 
     // Run again until all boards are won
     let mutable boardsWon = 0
@@ -129,28 +130,5 @@ let runDay (input: string[]) =
                     (num, Some(board))
                 | None -> (last_num, last_board))
 
-    let score = lastWinningBoard.Value.sumUnmarked ()
-    printfn $"Part 2: {score * last} = {score} * {last}"
-
-let testDay() =
-    runDay  [|
-         "7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1";
-         "";
-         "22 13 17 11  0";
-          "8  2 23  4 24";
-         "21  9 14 16  7";
-          "6 10  3 18  5";
-          "1 12 20 15 19";
-         "";
-          "3 15  0  2 22";
-          "9 18 13 17  5";
-         "19  8  7 25 23";
-         "20 11 10 24  4";
-         "14 21 16 12  6";
-         "";
-         "14 21 17 24  4";
-         "10 16 15  9 19";
-         "18  8 23 26 20";
-         "22 11 13  6  5";
-         "2  0 12  3  7";
-     |]
+    let part2 = lastWinningBoard.Value.getScore(last)
+    int64 part1, int64 part2

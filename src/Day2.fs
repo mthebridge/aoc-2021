@@ -5,7 +5,9 @@ type Instruction =
    | Up of int
    | Down of int
 
-let runDay input =
+let expectedTest = (150L, 900L)
+
+let run input =
     let parse (line: string) =
         let parts = line.Split ' '
         let dir = parts[0]
@@ -25,8 +27,7 @@ let runDay input =
                 | Down(value) -> hdist, depth + value
         )
 
-    let answer = depth * hdist
-    printfn $"Part 1 answer: {answer}"
+    let answer1 = depth * hdist
 
     let ((hdist, depth, _)) =
         ((0, 0, 0), input |> Array.map parse) ||> Array.fold (fun (hdist, depth, aim) instr ->
@@ -35,5 +36,5 @@ let runDay input =
                 | Up(value) -> hdist, depth, aim - value
                 | Down(value) ->  hdist, depth, aim + value
         )
-    let answer = depth * hdist
-    printfn $"Part 2 answer: {answer}"
+    let answer2 = depth * hdist
+    int64 answer1, int64 answer2

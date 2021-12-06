@@ -1,6 +1,8 @@
 ﻿module day1
 
-let runDay (inputStr: string[]) =
+let expectedTest = (7L, 5L)
+
+let run (inputStr: string[]) =
     let input = inputStr |> Array.map int
     let is_incr (x, y) = x < y
 
@@ -11,9 +13,6 @@ let runDay (inputStr: string[]) =
         |> Array.length
 
     let incrs = input |> count_incr_steps
-
-
-    printfn $"Part 1: {incrs}"
 
     let threewaysum (list: array<int>) =
         let limit = list.Length - 2
@@ -29,4 +28,4 @@ let runDay (inputStr: string[]) =
 
     let newincrs = input |> threewaysum |> count_incr_steps
 
-    printfn $"Part 2: {newincrs}"
+    int64 incrs, int64 newincrs
