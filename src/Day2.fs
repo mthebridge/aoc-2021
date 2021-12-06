@@ -19,23 +19,23 @@ let runDay =
             |"down" ->  Down(value)
             |_ -> invalidArg dir "Invalid instruction"
 
-    let (_, (hdist, depth)) =
-        ((0, 0), input |> Array.map parse) ||> Array.mapFold (fun (hdist, depth) instr ->
+    let (hdist, depth) =
+        ((0, 0), input |> Array.map parse) ||> Array.fold (fun (hdist, depth) instr ->
             match instr with
-                | Forward(value) -> (), (hdist + value, depth)
-                | Up(value) -> (), (hdist, depth - value)
-                | Down(value) -> (), (hdist, depth + value)
+                | Forward(value) ->  hdist + value, depth
+                | Up(value) ->  hdist, depth - value
+                | Down(value) -> hdist, depth + value
         )
 
     let answer = depth * hdist
     printfn $"Part 1 answer: {answer}"
 
-    let (_, (hdist, depth, _)) =
-        ((0, 0, 0), input |> Array.map parse) ||> Array.mapFold (fun (hdist, depth, aim) instr ->
+    let ((hdist, depth, _)) =
+        ((0, 0, 0), input |> Array.map parse) ||> Array.fold (fun (hdist, depth, aim) instr ->
             match instr with
-                | Forward(value) -> (), (hdist + value, depth + (value * aim), aim)
-                | Up(value) -> (), (hdist, depth, aim - value)
-                | Down(value) -> (), (hdist, depth, aim + value)
+                | Forward(value) ->  hdist + value, depth + (value * aim), aim
+                | Up(value) -> hdist, depth, aim - value
+                | Down(value) ->  hdist, depth, aim + value
         )
     let answer = depth * hdist
     printfn $"Part 2 answer: {answer}"
