@@ -21,11 +21,13 @@ let main args =
         let input = System.IO.File.ReadAllLines(if test then  $@"inputs/test{day}.txt"  else $@"inputs/day{day}.txt")
 
         let (part1, part2) = runfn input
-        do printfn $"Part1: {part1}"
-        do printfn $"Part2: {part2}"
+
         if test && part1exp <> part1 then
             printfn $"Part 1 test failed! Expected {part1exp} Got {part1}"; 1
         elif test && part2exp <> part2 then
             printfn $"Part 2 test failed! Expected {part2exp} Got {part2}"; 1
-        else
+        elif test then
             printfn "Tests passed!"; 0
+        else
+            printfn $"Part1: {part1}\nPart2: {part2}"
+            0
