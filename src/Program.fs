@@ -22,12 +22,13 @@ let main args =
 
         let (part1, part2) = runfn input
 
-        if test && part1exp <> part1 then
-            printfn $"Part 1 test failed! Expected {part1exp} Got {part1}"; 1
-        elif test && part2exp <> part2 then
-            printfn $"Part 2 test failed! Expected {part2exp} Got {part2}"; 1
-        elif test then
-            printfn "Tests passed!"; 0
+        if test then
+            if part1exp <> part1 then
+                printfn $"Part 1 test failed! Expected {part1exp} Got {part1}"; 1
+            elif part2exp <> part2 then
+                printfn $"Part 2 test failed! Expected {part2exp} Got {part2}"; 1
+            else
+                printfn "Tests passed!"; 0
         else
             printfn $"Part1: {part1}\nPart2: {part2}"
             0
