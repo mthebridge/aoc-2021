@@ -10,6 +10,13 @@ type Direction =
     | South
     | West
 
+let neighbour x y dir =
+    match dir with
+        | North -> x, (y - 1)
+        | East -> (x + 1), y
+        | South -> x, (y + 1)
+        | West -> (x - 1), y
+
 let run (input: string []) =
     let heights: HeightMap =
         input
@@ -77,19 +84,16 @@ let run (input: string []) =
                 0
             else
                 let thisHeight = map.[y].[x]
-
                 if not (willDrain thisHeight lastHeight) then
                     0
                 else
                     visited <- visited.Add((x, y))
+
                     (1, [ North; East; South; West ])
                     ||> List.fold (fun count dir ->
-                        count
-                        + match dir with
-                          | North -> visitPoint x (y - 1) thisHeight
-                          | East -> visitPoint (x + 1) y thisHeight
-                          | South -> visitPoint x (y + 1) thisHeight
-                          | West -> visitPoint (x - 1) y thisHeight)
+                        let nextx, nexty = neighbour x y dir
+                        count + visitPoint nextx nexty thisHeight
+                    )
 
         visitPoint sinkcol sinkrow 0
 
