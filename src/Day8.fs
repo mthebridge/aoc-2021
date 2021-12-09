@@ -2,26 +2,35 @@ module day8
 
 let expectedTest = (26L, 61229L)
 
+/// The set of inputs that make up a given 7-segment display.
+/// Use a Set as the ordering is unimportant and it allows easy comparison.
 type Digit = Set<char>
 
+///
 type Entry =
     { digits: array<Digit>
       outputs: array<Digit> }
 
+let parseEntry (line: string) =
+    line.Split(" ", System.StringSplitOptions.RemoveEmptyEntries)
+    |> Array.map Set.ofSeq
+
 type PossibleValues =
-    | Zero
     | One
-    | Two
-    | Three
     | Four
-    | Five
-    | Six
     | Seven
     | Eight
-    | Nine
     | TwoThreeFive
     | ZeroSixNine
 
+let getValue poss =
+    match poss with
+    | One -> 1
+    | Four -> 4
+    | Seven -> 7
+    | Eight -> 8
+    | TwoThreeFive
+    | ZeroSixNine -> invalidOp "Cannot convert to digit when still unknown"
 
 let run (input: string []) =
 
@@ -30,14 +39,8 @@ let run (input: string []) =
         |> Array.map (fun line ->
             let parts = line.Split "|"
 
-            { digits =
-                (parts.[0]
-                    .Split(" ", System.StringSplitOptions.RemoveEmptyEntries)
-                 |> Array.map Set.ofSeq)
-              outputs =
-                parts.[1]
-                    .Split(" ", System.StringSplitOptions.RemoveEmptyEntries)
-                |> Array.map Set.ofSeq })
+            { digits = parseEntry parts.[0]
+              outputs = parseEntry parts.[1] })
 
     // For part1 we just want the number of outputs with length 2,3, 4 or 7
     let isUniqueDigit (output: Digit) =
@@ -54,23 +57,8 @@ let run (input: string []) =
                 .Length)
 
     // For each entry:
-    // -> Work out what letters correspond to 1, 4, 7, 8 (2, 4, 3, 7 segments)
+    // -> Work out what groups correspond to 1, 4, 7, 8 (2, 4, 3, 7 segments)
     // -> For the remaining digits, 2, 3 and 5 are 5 segment; 0, 6 and 9 are 6-segment
-    let getValue poss =
-        match poss with
-        | Zero -> 0
-        | One -> 1
-        | Two -> 2
-        | Three -> 3
-        | Four -> 4
-        | Five -> 5
-        | Six -> 6
-        | Seven -> 7
-        | Eight -> 8
-        | Nine -> 9
-        | TwoThreeFive
-        | ZeroSixNine -> invalidOp "Cannot convert to digit when still unknown"
-
     let determineDigits (digits: Digit []) =
         let mapping =
             seq {
@@ -92,7 +80,7 @@ let run (input: string []) =
         //     -> 6 can be distinguished from 0 and 9 by not having 7 as a subset
         //     -> 9 can be distinguished from 0 and 6 by having 4 as a subset
         let seven =
-            mapping |> Map.findKey (fun _ v -> v = Seven)
+            Map.findKey (fun _ v -> v = Seven) mapping
 
         let four =
             mapping |> Map.findKey (fun _ v -> v = Four)
@@ -100,14 +88,14 @@ let run (input: string []) =
         mapping
         |> Map.map (fun digit value ->
             match value with
-            | PossibleValues.TwoThreeFive ->
+            | TwoThreeFive ->
                 if seven.IsSubsetOf digit then
                     3
                 elif ((four, digit) ||> Set.intersect).Count = 2 then
                     2
                 else
                     5
-            | PossibleValues.ZeroSixNine ->
+            | ZeroSixNine ->
                 if four.IsSubsetOf digit then 9
                 elif seven.IsSubsetOf digit then 0
                 else 6
@@ -119,9 +107,9 @@ let run (input: string []) =
             let digitMap = determineDigits entry.digits
             // work out the output a digit at a time, build it up base 10
             let thisValue =
-               (0, entry.outputs)
-               ||> Array.fold (fun v output -> 10 * v + digitMap.Item output)
-            sum + thisValue
-        )
+                (0, entry.outputs)
+                ||> Array.fold (fun v output -> 10 * v + digitMap.Item output)
+
+            sum + thisValue)
 
     int64 part1, int64 part2
