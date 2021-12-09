@@ -31,21 +31,24 @@ let run (input: string []) =
 
         neighbours
 
-    let part1 =
-        (0, { 0 .. numRows - 1 })
-        ||> Seq.fold (fun sum row ->
-            (sum, seq { 0 .. numCols - 1 })
-            ||> Seq.fold (fun sum col ->
+    let lowPoints =
+        { 0 .. numRows - 1 }
+        |> Seq.collect (fun row ->
+            { 0 .. numCols - 1 }
+            |> Seq.choose (fun col ->
                 let current = heights.[row].[col]
-                // do printfn $"({col}, {row} = {current})"
                 let neighbours = getNeighbours heights col row
+                if neighbours |> Set.forall (fun neigh -> current < neigh) then
+                    Some((row, col))
+                else
+                    None
+            ))
 
-                sum
-                 + if neighbours |> Set.forall (fun neigh -> current < neigh) then
-                        printfn $"Have low point at ({col}, {row})"
-                        current + 1
-                    else
-                        0))
+    let part1 =
+        (0, lowPoints)
+        ||> Seq.fold (fun sum (row, col) ->
+            //printfn $"Adding low point at ({col},{row})"
+            sum + heights.[row].[col] + 1)
 
     // Work out how big the "basin" is for each low point.
     int64 part1, 0L
