@@ -18,6 +18,7 @@ let main args =
             | 7  -> day7.run, day7.expectedTest
             | 8  -> day8.run, day8.expectedTest
             | 9  -> day9.run, day9.expectedTest
+            | 10  -> day10.run, day10.expectedTest
             |_ -> invalidArg $"{day}" "Unimplemented day"
 
         let input = System.IO.File.ReadAllLines(if test then  $@"inputs/test{day}.txt"  else $@"inputs/day{day}.txt")

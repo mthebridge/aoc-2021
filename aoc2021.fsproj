@@ -4,7 +4,6 @@
     <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="src\Day9.fs" />
     <Compile Include="src/*.fs" />
   </ItemGroup>
 </Project>
