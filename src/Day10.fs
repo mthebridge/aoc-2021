@@ -66,7 +66,6 @@ let run (input: string []) =
                             |'<' -> 4L
                             |_ -> invalidArg $"{char}" "Impossible bad character"
                     ) 0L
-                printfn $"Completions: {stack}, line score: {lineScore}"
                 Some(lineScore)
         )
         |> Array.sort
