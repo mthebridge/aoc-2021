@@ -3,46 +3,30 @@ module day11
 let expectedTest = (1656L, 195L)
 
 let GRIDSIZE = 10
+let MAX_ENERGY = 9
 type Grid = int [] []
 
 let printGrid grid =
     grid
     |> Array.iter (fun row ->
         row |> Array.iter (fun e -> printf $"{e}")
-        printfn ""
-    )
+        printfn "")
 
 let getNeighbours x y =
-    let mutable neighs = Set.empty
-
-    if x > 0 then
-        neighs <- neighs.Add(x - 1, y)
-
-        if y > 0 then
-            neighs <- neighs.Add(x - 1, y - 1)
-            neighs <- neighs.Add(x, y - 1)
-
-        if y < GRIDSIZE - 1 then
-            neighs <- neighs.Add(x - 1, y + 1)
-            neighs <- neighs.Add(x, y + 1)
-
-    if x < GRIDSIZE - 1 then
-        neighs <- neighs.Add(x + 1, y)
-        if y > 0 then
-            neighs <- neighs.Add(x + 1, y - 1)
-            neighs <- neighs.Add(x, y - 1)
-        if y < GRIDSIZE - 1 then
-            neighs <- neighs.Add(x + 1, y + 1)
-            neighs <- neighs.Add(x, y + 1)
-    let printNeigh (x, y) = $"{x}, {y}"
-    neighs
-
+    seq {
+        for x' in max 0 (x - 1) .. min (GRIDSIZE - 1) (x + 1) do
+            yield!
+                seq {
+                    for y' in max 0 (y - 1) .. min (GRIDSIZE - 1) (y + 1) do
+                        if (x', y') <> (x, y) then (x', y')
+                }
+    }
 
 let runStep grid =
     let rec triggerFlashes grid =
         let newGrid =
             grid
-            // Increment any fields whose neightbours are > 9
+            // Increment any fields whose neightbours are > MAX_ENERGY
             |> Array.mapi (fun x row ->
                 row
                 |> Array.mapi (fun y energy ->
@@ -53,12 +37,13 @@ let runStep grid =
                         // For each neighbour that is greater than 9, then increment again
                         let flashedNeighbours =
                             getNeighbours x y
-                            |> Set.filter (fun (nx, ny) -> grid.[nx].[ny] > 9 )
-                            |> Set.count
+                            |> Seq.filter (fun (nx, ny) -> grid.[nx].[ny] > MAX_ENERGY)
+                            |> Seq.length
                         // if flashedNeighbours > 0 then printfn $"{flashedNeighbours} flashed this loop for ({x},{y})"
-                        if energy > 9 then 0
-                        else energy + flashedNeighbours
-                ))
+                        if energy > MAX_ENERGY then
+                            0
+                        else
+                            energy + flashedNeighbours))
 
         if newGrid = grid then
             newGrid
@@ -95,21 +80,21 @@ let run (input: string []) =
     checkArg grid.[0] "Rows must be 10 integers"
 
     let runPart1 grid numSteps =
-        ((grid, 0), seq {1 .. numSteps }) ||>
-        Seq.fold (fun (grid, flashes) i ->
+        ((grid, 0), seq { 1 .. numSteps })
+        ||> Seq.fold (fun (grid, flashes) i ->
             let (newGrid, newFlashes) = runStep grid
-            (newGrid, flashes + newFlashes)
-        )
+            (newGrid, flashes + newFlashes))
 
-    let grid, part1 = runPart1 grid 100
+    let part1Steps = 100
+    let grid, part1 = runPart1 grid part1Steps
 
     // For part 2, simply keep running through until there are 100 flashes
     let rec runPart2 grid step =
         let (newGrid, newflashes) = runStep grid
+
         match newflashes with
-        |100 -> step
-        |_ -> runPart2 newGrid (step + 1)
+        |x when x = (GRIDSIZE * GRIDSIZE) -> step
+        | _ -> runPart2 newGrid (step + 1)
 
-    let part2 = runPart2 grid 101
+    let part2 = runPart2 grid (part1Steps + 1)
     int64 part1, int64 part2
-
