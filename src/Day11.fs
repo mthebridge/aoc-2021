@@ -23,27 +23,30 @@ let getNeighbours x y =
     }
 
 let runStep grid =
+
+    let getFlashingNeighbours (grid: Grid) x y =
+        getNeighbours x y
+        |> Seq.filter (fun (nx, ny) -> grid.[nx].[ny] > MAX_ENERGY)
+        |> Seq.length
+
+    // Work out the new energy for this cell based
+    let handleCellFlashes grid x y energy =
+        // Skip over any nodes already flashed - we don't want to increment them again
+        if energy = 0 then
+            0
+        elif energy > MAX_ENERGY then
+            // Trigger flash, nothing more to do.
+            0
+        else
+            // Increment energy by the number of adjacent nodes that will flash this turn
+            energy + getFlashingNeighbours grid x y
+
     let rec triggerFlashes grid =
         let newGrid =
             grid
-            // Increment any fields whose neightbours are > MAX_ENERGY
             |> Array.mapi (fun x row ->
                 row
-                |> Array.mapi (fun y energy ->
-                    // Skip over any nodes already flashed - we don't want to increment them again
-                    if energy = 0 then
-                        0
-                    else
-                        // For each neighbour that is greater than 9, then increment again
-                        let flashedNeighbours =
-                            getNeighbours x y
-                            |> Seq.filter (fun (nx, ny) -> grid.[nx].[ny] > MAX_ENERGY)
-                            |> Seq.length
-                        // if flashedNeighbours > 0 then printfn $"{flashedNeighbours} flashed this loop for ({x},{y})"
-                        if energy > MAX_ENERGY then
-                            0
-                        else
-                            energy + flashedNeighbours))
+                |> Array.mapi (fun y energy -> handleCellFlashes grid x y energy))
 
         if newGrid = grid then
             newGrid
@@ -72,12 +75,12 @@ let run (input: string []) =
             |> Seq.map (System.Char.GetNumericValue >> int)
             |> Seq.toArray)
 
-    let checkArg (arr: 'T []) msg =
+    let checkLength (arr: 'T []) msg =
         if arr.Length <> GRIDSIZE then
             invalidArg $"{arr.Length}" msg
 
-    checkArg grid "Input must be 10 lines"
-    checkArg grid.[0] "Rows must be 10 integers"
+    checkLength grid $"Input must be {GRIDSIZE} lines"
+    checkLength grid.[0] $"Rows must be {GRIDSIZE} integers"
 
     let runPart1 grid numSteps =
         ((grid, 0), seq { 1 .. numSteps })
@@ -93,7 +96,7 @@ let run (input: string []) =
         let (newGrid, newflashes) = runStep grid
 
         match newflashes with
-        |x when x = (GRIDSIZE * GRIDSIZE) -> step
+        | x when x = (GRIDSIZE * GRIDSIZE) -> step
         | _ -> runPart2 newGrid (step + 1)
 
     let part2 = runPart2 grid (part1Steps + 1)
