@@ -40,41 +40,23 @@ let newCaveSystem input : caveSystem =
         |> addConnection first second
         |> addConnection second first)
 
-let rec countPaths (system: caveSystem) nextLinks (visited: Set<Cave>) =
-    (0, nextLinks)
-    ||> Set.fold (fun count next ->
-        match next with
-        // New small cave.  Mark visited and recurse
-        | Small (_) when not (visited.Contains next) ->
-            count
-            + countPaths system (system.TryFind next).Value (visited.Add next)
-        // New large cave.  Recurse
-        | Large (_) ->
-            count
-            + countPaths system (system.TryFind next).Value visited
-        // Visited cave.  Can't go this way, stop here
-        | Start
-        | Small (_) -> count
-        // End of path.  Stop here and add 1
-        | End -> count + 1)
-
-let rec countPaths2 (system: caveSystem) nextLinks (visited: Set<Cave>) doubleVisited =
+/// Recursively count the paths available
+let rec countPaths (system: caveSystem) nextLinks (visited: Set<Cave>) doubleVisited =
     (0, nextLinks)
     ||> Set.fold (fun count next ->
         match next with
         // New large cave.  Recurse
         | Large (_) ->
             count
-            + countPaths2 system (system.TryFind next).Value visited doubleVisited
+            + countPaths system (system.TryFind next).Value visited doubleVisited
         // New small cave.  Mark visited and recurse
         | Small (_) when not (visited.Contains next) ->
             count
-            + countPaths2 system (system.TryFind next).Value (visited.Add next) doubleVisited
+            + countPaths system (system.TryFind next).Value (visited.Add next) doubleVisited
         | Small (_) when not doubleVisited ->
             // We haven't done a double visit yet, try using this cave twice.
             count
-            + countPaths2 system (system.TryFind next).Value (visited.Add next) true
-
+            + countPaths system (system.TryFind next).Value (visited.Add next) true
         // Visited cave.  Can't go this way, stop here
         | Start
         | Small (_) -> count
@@ -84,6 +66,6 @@ let rec countPaths2 (system: caveSystem) nextLinks (visited: Set<Cave>) doubleVi
 let run (input: string []) =
     let caves = newCaveSystem input
     let start = (caves.TryFind Start).Value
-    let part1 = countPaths caves start Set.empty
-    let part2 = countPaths2 caves start Set.empty false
+    let part1 = countPaths caves start Set.empty true
+    let part2 = countPaths caves start Set.empty false
     int64 part1, int64 part2
