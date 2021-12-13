@@ -34,21 +34,38 @@ let parseFold (line: string) =
     { dir = dir; pos = pos }
 
 let runFold (holes: Set<int * int>) instr =
-    let partitioner =
-        match instr.dir with
-        | XFold -> (fun h -> fst h < instr.pos)
-        | YFold -> fun h -> snd h < instr.pos
 
-    let (left, right) = holes |> Set.partition partitioner
+    // Split the holes into the two "halves"
+    let (left, right) = holes |> Set.partition (fun h ->
+        match instr.dir with
+        | XFold -> fst h < instr.pos
+        | YFold -> snd h < instr.pos
+    )
+
+    // Reflecting n across the fold means n -> fold - (n - fold)
+    // which simplifies to the below.
+    let flipcoord n = (2 * instr.pos) - n
 
     right
     |> Set.map (fun (x, y) ->
         match instr.dir with
-        // Flip the relevant cooridnate relative to the fold line
-        | XFold -> ((2 * instr.pos - x), y)
-        | YFold -> (x, (2 * instr.pos - y)))
+        // Flip the relevant coordinate relative to the fold line
+        | XFold -> (flipcoord x, y)
+        | YFold -> (x, flipcoord y))
     |> Set.union left
 
+let printImage image =
+    let maxX = image |> Set.map fst |> Set.maxElement
+    let maxY = image |> Set.map snd |> Set.maxElement
+
+    for y in 0 .. maxY do
+        for x in 0 .. maxX do
+            if image.Contains(x, y) then
+                printf "X"
+            else
+                printf " "
+
+        printfn ""
 
 let run (input: string []) =
     let splitIdx =
@@ -64,19 +81,10 @@ let run (input: string []) =
 
     let part1 = runFold holes folds.[0] |> Set.count
 
-    let image = (holes, folds) ||> Array.fold runFold
-
     // We can't return an image, so just print it and return 0
-    let maxX = image |> Set.map fst |> Set.maxElement
-    let maxY = image |> Set.map snd |> Set.maxElement
-
-    for y in 0 .. maxY do
-        for x in 0 .. maxX do
-            if image.Contains(x, y) then
-                printf "X"
-            else
-                printf " "
-
-        printfn ""
+    do
+        (holes, folds)
+        ||> Array.fold runFold
+        |> printImage
 
     int64 part1, 0L
