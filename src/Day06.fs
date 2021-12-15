@@ -8,7 +8,7 @@ let run (input: string[]) =
     let fish =
         input.[0].Split ","
         |> Array.map int
-        |> Array.countBy (fun f -> f)
+        |> Array.countBy id
         |> Array.map (fun (f, count) -> (f, int64 count))
         |> Array.toList
 
