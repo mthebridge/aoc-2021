@@ -1,6 +1,6 @@
 module day16
 
-let expectedTest = (31L, 0L)
+let expectedTest = (20L, 1L)
 
 let hexToBin c =
     match c with
@@ -122,10 +122,14 @@ let binToInt bin =
     (0, bin)
     ||> Seq.fold (fun total x -> 2 * total + x)
 
+let binToU64 bin =
+    (0UL, bin)
+    ||> Seq.fold (fun total x -> 2UL * total + uint64 x)
+
 type PacketHeader = { ptype: int; version: int }
 
 type Packet =
-    | Literal of int
+    | Literal of uint64
     | Wrapper of list<PacketHeader * Packet>
 
 let rec VersionSum pkt =
@@ -134,6 +138,36 @@ let rec VersionSum pkt =
     | Wrapper (inner) ->
         (0, inner)
         ||> List.fold (fun sum (hdr, pkt) -> sum + hdr.version + VersionSum pkt)
+
+let rec evaluate ptype pkt =
+    match pkt with
+    | Literal (x) -> x
+    | Wrapper (inner) ->
+        let inners =
+            inner
+            |> List.map (fun (h, p) -> evaluate h.ptype p)
+
+        match ptype with
+        | 0 -> inners |> List.sum
+        | 1 -> inners |> List.fold (fun acc v -> acc * v) 1UL
+        | 2 -> inners |> List.min
+        | 3 -> inners |> List.max
+        | 5 ->
+            if inners.[0] > inners.[1] then
+                1UL
+            else
+                0UL
+        | 6 ->
+            if inners.[0] < inners.[1] then
+                1UL
+            else
+                0UL
+        | 7 ->
+            if inners.[0] = inners.[1] then
+                1UL
+            else
+                0UL
+        | _ -> invalidArg $"{ptype}" "unknown packet operation"
 
 type LengthType =
     | PktCount of int
@@ -162,9 +196,9 @@ let parseValue body =
     // printfn $" - consumed {consumed}"
 
     let value =
-        num |> List.collect id |> binToInt |> Literal
+        num |> List.collect id |> binToU64 |> Literal
 
-    // printfn $"Got literal {value}"
+    printfn $"Got literal {value}"
     value, body |> List.skip consumed
 
 let rec parseWrapper lType (data: list<int>) =
@@ -202,7 +236,7 @@ and parsePacket binary =
         { ptype = binToInt ptype
           version = binToInt version }
 
-    // printfn $"Next packet type {header.ptype} v{header.version}"
+    printfn $"Next packet type {header.ptype} v{header.version}"
 
     let pkt, rest =
         match header.ptype with
@@ -230,5 +264,5 @@ let run (input: string []) =
         |> parsePacket
 
     let part1 = hdr.version + VersionSum packet
-    let part2 = 0
+    let part2 = evaluate hdr.ptype packet
     int64 part1, int64 part2
